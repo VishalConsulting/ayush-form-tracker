@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Submit Details</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f6f8;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0 0 25px;
+      color: #222222;
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: #333333;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 18px;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2878ff;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #2878ff;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .privacy {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 11px;
+      color: #777777;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="form-box">
+
+    <h2>Submit Your Details</h2>
+
+    <form id="leadForm">
+
+      <label for="name">Name</label>
+
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Enter your name"
+        autocomplete="name"
+        required
+      >
+
+      <label for="mobile">Mobile Number</label>
+
+      <input
+        type="tel"
+        id="mobile"
+        name="mobile"
+        placeholder="Enter 10 digit mobile number"
+        maxlength="10"
+        inputmode="numeric"
+        autocomplete="tel"
+        required
+      >
+
+      <button type="submit" id="submitBtn">
+        SUBMIT
+      </button>
+
+      <div id="message"></div>
+
+      <div class="privacy">
+        By submitting, you agree to have your details used for
+        contacting you regarding the submitted request.
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <script>
+
+    /* ==============================
+       GOOGLE APPS SCRIPT URL
+       ============================== */
+
+    const SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxcReoIws1_awHEL2JAnHpcZJvRdNoOZF6kzNLVjXxfD6ftNdFcTjl5iBdRS7RpPeRB/exec";
+
+
+    /* ==============================
+       REDIRECT URL
+       ============================== */
+
+    const REDIRECT_URL =
+      "https://a.aonelink.in/ANGOne/LOrw0ZC?utm_source=youtube&utm_medium=Netex&utm_campaign=405Login";
+
+
+    /* ==============================
+       FORM SUBMIT
+       ============================== */
+
+    document
+      .getElementById("leadForm")
+      .addEventListener("submit", function(e) {
+
+        e.preventDefault();
+
+
+        const name =
+          document.getElementById("name").value.trim();
+
+        const mobile =
+          document.getElementById("mobile").value.trim();
+
+        const button =
+          document.getElementById("submitBtn");
+
+        const message =
+          document.getElementById("message");
+
+
+        /* ==============================
+           NAME VALIDATION
+           ============================== */
+
+        if (name.length < 2) {
+
+          message.textContent =
+            "Please enter your name.";
+
+          message.style.color = "red";
+
+          return;
+        }
+
+
+        /* ==============================
+           MOBILE VALIDATION
+           ============================== */
+
+        if (!/^[0-9]{10}$/.test(mobile)) {
+
+          message.textContent =
+            "Please enter a valid 10-digit mobile number.";
+
+          message.style.color = "red";
+
+          return;
+        }
+
+
+        /* ==============================
+           BUTTON LOADING
+           ============================== */
+
+        button.disabled = true;
+
+        button.textContent =
+          "Submitting...";
+
+        message.textContent =
+          "Please wait...";
+
+        message.style.color =
+          "#555555";
+
+
+        /* ==============================
+           SEND DATA TO GOOGLE SHEET
+           ============================== */
+
+        const formData =
+          new FormData();
+
+        formData.append(
+          "name",
+          name
+        );
+
+        formData.append(
+          "mobile",
+          mobile
+        );
+
+
+        fetch(SCRIPT_URL, {
+
+          method: "POST",
+
+          body: formData,
+
+          mode: "no-cors"
+
+        })
+
+        .then(function() {
+
+
+          /* ==============================
+             SUCCESS MESSAGE
+             ============================== */
+
+          message.textContent =
+            "Submitted successfully!";
+
+          message.style.color =
+            "green";
+
+
+          /* ==============================
+             REDIRECT
+             ============================== */
+
+          setTimeout(function() {
+
+            window.location.href =
+              REDIRECT_URL;
+
+          }, 800);
+
+
+        })
+
+        .catch(function(error) {
+
+          console.error(error);
+
+
+          message.textContent =
+            "Something went wrong. Please try again.";
+
+          message.style.color =
+            "red";
+
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "SUBMIT";
+
+        });
+
+      });
+
+  </script>
+
+</body>
+</html>
